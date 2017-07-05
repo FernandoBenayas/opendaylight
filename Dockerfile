@@ -23,9 +23,11 @@ EXPOSE 8181 6633 8101
 
 RUN sed -ie "s/featuresBoot=.*/featuresBoot=config,standard,region,package,kar,ssh,management,odl-l2switch-switch-ui,odl-restconf,odl-mdsal-apidocs,odl-dlux-all/g" /odl/distribution/etc/org.apache.karaf.features.cfg
 
-RUN ./distribution/bin/start; until ./distribution/bin/client -u karaf version; do sleep 10s; done; ./distribution/bin/stop;
+ADD healthcheck.sh /odl/healthcheck.sh
+RUN chmod +x /odl/healthcheck.sh
 
-HEALTHCHECK --interval=1m --timeout=1s \
-  CMD ./distribution/bin/client -u karaf version || exit 1
+RUN ./distribution/bin/start; until /odl/healthcheck.sh ; do sleep 10s; done; ./distribution/bin/stop;
+
+HEALTHCHECK --interval=1m --timeout=10s CMD /odl/healthcheck.sh
 
 CMD ./distribution/bin/karaf
