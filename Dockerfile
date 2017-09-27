@@ -9,12 +9,12 @@ WORKDIR /odl
 
 RUN apk add --no-cache gcc g++ make libc-dev python-dev openssl && \
     apk add maven --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ && \
-    wget https://nexus.opendaylight.org/content/groups/public/org/opendaylight/integration/distribution-karaf/0.5.2-Boron-SR2/distribution-karaf-0.5.2-Boron-SR2.tar.gz && \
-    tar -xvzf distribution-karaf-0.5.2-Boron-SR2.tar.gz && \
+    wget https://nexus.opendaylight.org/content/groups/public/org/opendaylight/integration/distribution-karaf-0.5.4-Boron-SR4/distribution-karaf-0.5.4-Boron-SR4.tar.gz && \
+    tar -xvzf distribution-karaf-0.5.4-Boron-SR4.tar.gz && \
     apk del gcc make python-dev libc-dev g++ maven && \
     rm -rf /var/cache/apk/*
 
-RUN ln -s distribution-karaf-0.5.2-Boron-SR2 distribution
+RUN ln -s distribution-karaf-0.5.4-Boron-SR4 distribution
 # 8181 : API
 # 6633 : Openflow
 # 8101 : ODL cli
