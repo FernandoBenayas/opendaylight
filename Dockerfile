@@ -9,25 +9,21 @@ WORKDIR /odl
 
 RUN apk add --no-cache gcc g++ make libc-dev python-dev openssl && \
     apk add maven --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community/ && \
-    wget https://nexus.opendaylight.org/content/repositories/public/org/opendaylight/integration/distribution-karaf/0.5.4-Boron-SR4/distribution-karaf-0.5.4-Boron-SR4.tar.gz && \
-    tar -xvzf distribution-karaf-0.5.4-Boron-SR4.tar.gz && \
+    wget https://nexus.opendaylight.org/content/repositories/public/org/opendaylight/integration/distribution-karaf/0.6.2-Carbon/distribution-karaf-0.6.2-Carbon.tar.gz && \
+    tar -xvzf distribution-karaf-0.6.2-Carbon.tar.gz && \
     apk del gcc make python-dev libc-dev g++ maven && \
     rm -rf /var/cache/apk/*
 
-RUN ln -s distribution-karaf-0.5.4-Boron-SR4 distribution
+RUN ln -s distribution-karaf-0.6.2-Carbon distribution
 # 8181 : API
 # 6633 : Openflow
 # 8101 : ODL cli
 
 EXPOSE 8181 6633 8101
 
-RUN sed -ie "s/featuresBoot=.*/featuresBoot=config,standard,region,package,kar,ssh,management,odl-l2switch-switch-ui,odl-restconf,odl-mdsal-apidocs,odl-dlux-all/g" /odl/distribution/etc/org.apache.karaf.features.cfg
+RUN sed -i "s/featuresBoot=config,standard,region,package,kar,ssh,management/featuresBoot=config,standard,region,package,kar,ssh,management,odl-l2switch-switch-ui,odl-l2switch-all,odl-restconf,odl-mdsal-apidocs,odl-ovsdb-southbound-impl-ui,odl-dlux-core,odl-dluxapps-applications,odl-dluxapps-yangui,odl-dluxapps-yangvisualizer,odl-dluxapps-yangman,odl-dluxapps-nodes/g" /odl/distribution/etc/org.apache.karaf.features.cfg
 
 ADD healthcheck.sh /odl/healthcheck.sh
 RUN chmod +x /odl/healthcheck.sh
-
-RUN ./distribution/bin/start; until /odl/healthcheck.sh ; do sleep 10s; done; ./distribution/bin/stop;
-
-HEALTHCHECK --interval=1m --timeout=10s CMD /odl/healthcheck.sh
 
 CMD ./distribution/bin/karaf
